@@ -1,12 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <h1>holis</h1>
+  <meta charset="UTF-8">
+  <title>Buscar Pokémon por Número</title>
+
+<style>
+    body{ font-family: arial, sans-serif;
+    }
+    
+
+    .contenedor_Pokemon{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 2px solid #ccc;
+        padding: 15px;
+        width: 200px;
+        margin-top: 20px;
+        margin-left: 90px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    
+</style>
+
 </head>
 <body>
-    
+  <h1>Buscar Pokémon por Número</h1>
+
+  <label for="numero">Ingresa el número del Pokémon:</label>
+  <input type="number" id="numero" min="1" placeholder="Ej: 25">
+  <button onclick="buscarPokemon()">Buscar</button>
+
+  <div id="resultado" style="margin-top: 20px;"></div>
+
+  <script>
+    // Función asincrónica que busca el Pokémon por ID
+    async function buscarPokemon() {
+      const numero = document.getElementById("numero").value.trim();
+      const contenedor = document.getElementById("resultado");
+      contenedor.innerHTML = ""; // Limpiar contenido anterior
+
+      // Validar número ingresado
+      if (!numero || isNaN(numero) || parseInt(numero) < 1) {
+        contenedor.textContent = "Por favor ingresa un número válido mayor que cero.";
+        return;
+      }
+
+      try {
+        const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/${numero}`);
+        if (!respuesta.ok) throw new Error("Pokémon no encontrado");
+
+        const datos = await respuesta.json();
+
+
+        const contenedorPokemon = document.createElement("div");
+        contenedorPokemon.className = "contenedor_Pokemon";
+
+        const nombre = document.createElement("h2");
+        nombre.textContent = `#${datos.id} - ${datos.name.toUpperCase()}`;
+
+        const imagen = document.createElement("img");
+        imagen.src = datos.sprites.front_default;
+        imagen.alt = datos.name;
+
+        contenedorPokemon.appendChild(nombre);
+        contenedorPokemon.appendChild(imagen);
+
+        contenedor.appendChild(contenedorPokemon);
+
+      } catch (error) {
+        contenedor.textContent = "No se encontró ningún Pokémon con ese número.";
+        console.error(error);
+      }
+    }
+  </script>
 </body>
 </html>
